@@ -1,6 +1,8 @@
 package com.dgioto.fairytalesinukrainian.ui
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -10,9 +12,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Preview
 @Composable
 fun MainScreen() {
 
@@ -45,5 +49,15 @@ fun MainScreen() {
                 }
             }
         }
-    ) {}
+    ) {
+        val items = (0..100).toList() // Example data
+
+        LazyColumn(modifier = Modifier.padding(it)) {
+            items(items) { item ->
+                // Your item composable here
+                // For example, you can use Text or any other composable to display the item.
+                Text(text = "Item $item")
+            }
+        }
+    }
 }
