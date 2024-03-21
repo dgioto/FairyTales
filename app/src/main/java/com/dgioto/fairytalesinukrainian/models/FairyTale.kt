@@ -1,4 +1,4 @@
-package com.dgioto.fairytalesinukrainian
+package com.dgioto.fairytalesinukrainian.models
 
 data class FairyTale(
     val image: Int,

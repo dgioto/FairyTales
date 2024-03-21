@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Казки українською</string>
+    <string name="app_name">Українські казки</string>
     <string name="navigation_item_main">Головна</string>
     <string name="navigation_item_favourite">Обране</string>
     <string name="navigation_item_settings">Налаштування</string>

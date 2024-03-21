@@ -1,34 +1,31 @@
 package com.dgioto.fairytalesinukrainian.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.MaterialTheme.shapes
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.shapes
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
-    background = Color.Black,
-    onPrimary = Color.Yellow,
-    onSecondary = Color.White,
-    surface = Gray900,
+private val DarkColorPalette = darkColorScheme(
+    /*
+    primary = Color.Green,
+    onPrimary = Color.Green,
+    secondary = Color.Green,
+    onSecondary = Color.Green,
+    background = Color.Blue,
+    surface = Color.Yellow,
+    */
     )
 
-private val LightColorPalette = lightColors(
-    primary = Yellow500,
-    background = Blue500,
-    onPrimary = Blue500,
-    onSecondary = Blue900,
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
+private val LightColorPalette = lightColorScheme(
+    /*
+    primary = Color.Green,
+    onPrimary = Color.Green,
+    secondary = Color.Green,
+    onSecondary = Color.Green,
+    background = Color.Blue,
+    surface = Color.Yellow,
     */
 )
 
@@ -44,7 +41,7 @@ fun FairyTalesInUkrainianTheme(
     }
 
     MaterialTheme(
-        colors = colors,
+        colorScheme = colors,
         typography = Typography,
         shapes = shapes,
         content = content
