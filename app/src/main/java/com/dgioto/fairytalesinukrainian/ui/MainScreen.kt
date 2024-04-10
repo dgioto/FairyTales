@@ -1,5 +1,6 @@
 package com.dgioto.fairytalesinukrainian.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,80 +44,101 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dgioto.fairytalesinukrainian.models.FairyTale
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.dgioto.fairytalesinukrainian.R
+import com.dgioto.fairytalesinukrainian.models.FairyTale
 import com.dgioto.fairytalesinukrainian.ui.theme.FairyTalesInUkrainianTheme
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
-    val navigateToDetail = remember { mutableStateOf(false) }
-    var selectedFairytale by remember { mutableStateOf<FairyTale?>(null) }
+    val navController = rememberNavController()
+    val items = listOf(
+        FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
+        FairyTale(R.drawable.telesik, "Телесик", "Description 2", false),
+        FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
+    )
 
-    if (navigateToDetail.value) {
-        DetailScreen(selectedFairytale!!, onBackClick = { navigateToDetail.value = false })
-    } else {
-        Scaffold(
-            bottomBar = {
-                androidx.compose.material3.NavigationBar {
-                    val selectedItemPosition = remember {
-                        mutableIntStateOf(0)
-                    }
-
-                    val items = listOf(
-                        NavigationItem.Home,
-                        NavigationItem.Favourite,
-                        NavigationItem.Profile
-                    )
-
-                    items.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            selected = selectedItemPosition.intValue == index,
-                            onClick = { selectedItemPosition.intValue = index },
-                            icon = {
-                                Icon(item.icon, contentDescription = null)
-                            },
-                            label = {
-                                Text(text = stringResource(id = item.titleResId))
-                            }
-                        )
-                    }
-                }
-            }
-        ) {
-            val items = listOf(
-                FairyTale(
-                    image = R.drawable.koza_dereza,
-                    title = "Коза дереза",
-                    description = "Description 1",
-                    isFavorite = false
-                ),
-                FairyTale(
-                    image = R.drawable.telesik,
-                    title = "Телесик",
-                    description = "Description 2",
-                    isFavorite = false
-                ),
-                FairyTale(
-                    image = R.drawable.pan_kozkiy,
-                    title = "Пан коцький",
-                    description = "Description 3",
-                    isFavorite = false
-                ),
-            )
-
-            LazyColumn(modifier = Modifier.padding(it)) {
-                items(items) { item ->
-                    // Обработчик нажатия на FairyTaleItem
-                    val onItemClick: () -> Unit = {
-                        navigateToDetail.value = true
-                        selectedFairytale = item
-                    }
-                    // Вызов FairyTaleItem с передачей обработчика нажатия
-                    FairyTaleItem(fairyTale = item, onItemClick = onItemClick)
-                }
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) }
+    ) {
+        NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
+            composable(NavigationItem.Home.route) { HomeScreen(navController, items) }
+            composable(NavigationItem.Favourite.route) { FavouriteScreen() }
+            composable(NavigationItem.Profile.route) { ProfileScreen() }
+            composable(
+                route = "detail/{title}",
+                arguments = listOf(navArgument("title") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val title = backStackEntry.arguments?.getString("title")
+                val fairyTale = items.find { it.title == title }
+                if (fairyTale != null) {
+                    DetailScreen(
+                        fairyTale = fairyTale,
+                        onBackClick = { navController.popBackStack() })
+                } else Text("Ошибка: Сказка не найдена")
             }
         }
     }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    NavigationBar {
+        var navigationSelectedItem by remember { mutableStateOf(0) }
+        val navItems = listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
+
+        navItems.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = index == navigationSelectedItem,
+                onClick = {
+                    navigationSelectedItem = index
+                    navController.navigate(item.route)
+                },
+                icon = {
+                    Icon(
+                        imageVector = if (index == navigationSelectedItem) item.selectedIcon
+                        else item.unselectedIcon,
+                        contentDescription = item.titleResId.toString()
+                    )
+                },
+                label = { Text(text = stringResource(id = item.titleResId)) }
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(navController: NavHostController, items: List<FairyTale>) {
+    LazyColumn(modifier = Modifier.padding()) {
+        items(items) { item ->
+            FairyTaleItem(navController, item)
+        }
+    }
+}
+
+@Composable
+fun FavouriteScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) { Text("Favourite Screen") }
+}
+
+@Composable
+fun ProfileScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) { Text("Profile  Screen") }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,7 +181,7 @@ fun DetailScreen(fairyTale: FairyTale, onBackClick: () -> Unit) {
 }
 
 @Composable
-fun FairyTaleItem(fairyTale: FairyTale, onItemClick: () -> Unit) {
+fun FairyTaleItem(navController: NavController, fairyTale: FairyTale) {
     val isFavoriteState = remember { mutableStateOf(fairyTale.isFavorite) }
 
     Card(
@@ -167,7 +189,12 @@ fun FairyTaleItem(fairyTale: FairyTale, onItemClick: () -> Unit) {
     ) {
         // Обработчик нажатия добавлен к Row
         Row(
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onItemClick),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    // Переход на DetailScreen при нажатии
+                    navController.navigate("detail/${fairyTale.title}")
+                },
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Box(
