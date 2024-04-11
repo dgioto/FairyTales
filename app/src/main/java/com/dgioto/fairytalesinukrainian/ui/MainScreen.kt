@@ -65,24 +65,32 @@ fun MainScreen() {
         FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
     )
 
-    Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
-    ) {
-        NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
-            composable(NavigationItem.Home.route) { HomeScreen(navController, items) }
-            composable(NavigationItem.Favourite.route) { FavouriteScreen() }
-            composable(NavigationItem.Profile.route) { ProfileScreen() }
-            composable(
-                route = "detail/{title}",
-                arguments = listOf(navArgument("title") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val title = backStackEntry.arguments?.getString("title")
-                val fairyTale = items.find { it.title == title }
-                if (fairyTale != null) {
-                    DetailScreen(
-                        fairyTale = fairyTale,
-                        onBackClick = { navController.popBackStack() })
-                } else Text("Ошибка: Сказка не найдена")
+    Scaffold( bottomBar = { BottomNavigationBar(navController) }
+    ) { NavigationGraph(navController = navController, items = items) }
+}
+
+@Composable
+fun NavigationGraph(navController: NavHostController, items: List<FairyTale>){
+    NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
+        composable(NavigationItem.Home.route) { HomeScreen(navController, items) }
+        composable(NavigationItem.Favourite.route) { FavouriteScreen() }
+        composable(NavigationItem.Profile.route) { ProfileScreen() }
+        composable(
+            route = "detail/{title}",
+            arguments = listOf(navArgument("title") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title")
+            val fairyTale = items.find { it.title == title }
+            if (fairyTale != null) {
+                DetailScreen(
+                    fairyTale = fairyTale,
+                    onBackClick = { navController.popBackStack() })
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) { Text("Ошибка: Сказка не найдена") }
             }
         }
     }
