@@ -11,23 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -57,7 +52,7 @@ import com.dgioto.fairytalesinukrainian.ui.theme.FairyTalesInUkrainianTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
     val navController = rememberNavController()
     val items = listOf(
         FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
@@ -66,14 +61,18 @@ fun MainScreen() {
     )
 
     Scaffold( bottomBar = { BottomNavigationBar(navController) }
-    ) { NavigationGraph(navController = navController, items = items) }
+    ) { NavigationGraph(navController, items, viewModel) }
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController, items: List<FairyTale>){
+fun NavigationGraph(
+    navController: NavHostController,
+    items: List<FairyTale>,
+    viewModel: MainScreenViewModel
+){
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
-        composable(NavigationItem.Home.route) { HomeScreen(navController, items) }
-        composable(NavigationItem.Favourite.route) { FavouriteScreen() }
+        composable(NavigationItem.Home.route) { HomeScreen(navController, items, viewModel) }
+        composable(NavigationItem.Favourite.route) { FavouriteScreen(navController, viewModel) }
         composable(NavigationItem.Profile.route) { ProfileScreen() }
         composable(
             route = "detail/{title}",
@@ -82,9 +81,11 @@ fun NavigationGraph(navController: NavHostController, items: List<FairyTale>){
             val title = backStackEntry.arguments?.getString("title")
             val fairyTale = items.find { it.title == title }
             if (fairyTale != null) {
-                DetailScreen(
+                FairyTaleScreen(
                     fairyTale = fairyTale,
-                    onBackClick = { navController.popBackStack() })
+                    onBackClick = { navController.popBackStack() },
+                    viewModel = viewModel
+                )
             } else {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -123,74 +124,12 @@ fun BottomNavigationBar(navController: NavController) {
 }
 
 @Composable
-fun HomeScreen(navController: NavHostController, items: List<FairyTale>) {
-    LazyColumn(modifier = Modifier.padding()) {
-        items(items) { item ->
-            FairyTaleItem(navController, item)
-        }
-    }
-}
-
-@Composable
-fun FavouriteScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) { Text("Favourite Screen") }
-}
-
-@Composable
-fun ProfileScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) { Text("Profile  Screen") }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailScreen(fairyTale: FairyTale, onBackClick: () -> Unit) {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column {
-            TopAppBar(
-                title = { Text(text = fairyTale.title) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* Handle favorite toggle */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite, // Adjust based on favorite state
-                            contentDescription = null,
-                            tint = Color.Red // Adjust based on favorite state
-                        )
-                    }
-                }
-            )
-
-            Image(
-                painter = painterResource(id = fairyTale.image),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            )
-
-            Text(
-                text = fairyTale.description,
-                modifier = Modifier.padding(all = 16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun FairyTaleItem(navController: NavController, fairyTale: FairyTale) {
-    val isFavoriteState = remember { mutableStateOf(fairyTale.isFavorite) }
+fun FairyTaleItem(
+    navController: NavController,
+    fairyTale: FairyTale,
+    viewModel: MainScreenViewModel
+) {
+    val isFavoriteState = remember { mutableStateOf(fairyTale in viewModel.favoriteFairyTales) }
 
     Card(
         modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
@@ -227,7 +166,11 @@ fun FairyTaleItem(navController: NavController, fairyTale: FairyTale) {
             )
 
             IconButton(
-                onClick = { isFavoriteState.value = !isFavoriteState.value },
+                onClick = {
+                    if (isFavoriteState.value) viewModel.removeFromFavorites(fairyTale)
+                    else viewModel.addToFavorites(fairyTale)
+                    isFavoriteState.value = !isFavoriteState.value
+                },
                 modifier = Modifier.align(alignment = Alignment.Top)
             ) {
                 Icon(
