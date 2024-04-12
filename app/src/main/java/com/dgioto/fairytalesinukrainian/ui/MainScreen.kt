@@ -1,7 +1,9 @@
 package com.dgioto.fairytalesinukrainian.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +18,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,7 +104,7 @@ fun NavigationGraph(
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    NavigationBar {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
         var navigationSelectedItem by remember { mutableStateOf(0) }
         val navItems = listOf(NavigationItem.Home, NavigationItem.Favourite, NavigationItem.Profile)
 
@@ -117,7 +122,16 @@ fun BottomNavigationBar(navController: NavController) {
                         contentDescription = item.titleResId.toString()
                     )
                 },
-                label = { Text(text = stringResource(id = item.titleResId)) }
+                label = { Text(text = stringResource(id = item.titleResId)) },
+                colors = NavigationBarItemColors(
+                    selectedIconColor = MaterialTheme.colorScheme.secondary,
+                    unselectedIconColor = MaterialTheme.colorScheme.surface,
+                    selectedTextColor = MaterialTheme.colorScheme.secondary,
+                    unselectedTextColor = MaterialTheme.colorScheme.surface,
+                    selectedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    disabledIconColor = Color.Green,
+                    disabledTextColor = Color.Green
+                )
             )
         }
     }
@@ -132,7 +146,15 @@ fun FairyTaleItem(
     val isFavoriteState = remember { mutableStateOf(fairyTale in viewModel.favoriteFairyTales) }
 
     Card(
-        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
+            .border(BorderStroke(2.dp, MaterialTheme.colorScheme.secondary), RoundedCornerShape(10.dp)),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.secondary,
+            disabledContainerColor = Color.White,
+            disabledContentColor = Color.White,
+        )
     ) {
         // Обработчик нажатия добавлен к Row
         Row(
@@ -162,7 +184,8 @@ fun FairyTaleItem(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .padding(start = 16.dp)
-                    .align(alignment = Alignment.CenterVertically)
+                    .align(alignment = Alignment.CenterVertically),
+                color = MaterialTheme.colorScheme.secondary
             )
 
             IconButton(
@@ -175,21 +198,21 @@ fun FairyTaleItem(
             ) {
                 Icon(
                     imageVector = if (isFavoriteState.value) Icons.Filled.Favorite
-                    else Icons.Outlined.Favorite,
+                                else Icons.Outlined.Favorite,
                     contentDescription = null,
-                    tint = if (isFavoriteState.value) Color.Red else Color.Gray
+                    tint = if (isFavoriteState.value) Color.Red else MaterialTheme.colorScheme.secondary
                 )
             }
         }
     }
 }
 
+@Preview
 @Composable
 fun LightThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = false) { MainScreen() }
 }
 
-@Preview
 @Composable
 fun DarkThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = true) { MainScreen() }

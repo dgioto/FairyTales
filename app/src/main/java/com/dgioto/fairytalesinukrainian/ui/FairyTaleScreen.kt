@@ -11,9 +11,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +34,7 @@ fun FairyTaleScreen(
 ) {
     val isFavoriteState = remember { mutableStateOf(fairyTale in viewModel.favoriteFairyTales) }
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column {
             TopAppBar(
                 title = { Text(text = fairyTale.title) },
@@ -51,10 +53,17 @@ fun FairyTaleScreen(
                             imageVector = Icons.Filled.Favorite, // Adjust based on favorite state
                             contentDescription = null,
                             tint = if (isFavoriteState.value) Color.Red
-                            else Color.Gray // Adjust based on favorite state
+                            else MaterialTheme.colorScheme.onPrimary // Adjust based on favorite state
                         )
                     }
-                }
+                },
+                colors = TopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.onSecondary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = Color.Red,
+                    scrolledContainerColor = Color.White
+                )
             )
 
             Image(
@@ -67,7 +76,8 @@ fun FairyTaleScreen(
 
             Text(
                 text = fairyTale.description,
-                modifier = Modifier.padding(all = 16.dp)
+                modifier = Modifier.padding(all = 16.dp),
+                color = MaterialTheme.colorScheme.secondary
             )
         }
     }
