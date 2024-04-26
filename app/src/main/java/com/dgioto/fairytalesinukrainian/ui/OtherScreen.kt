@@ -3,8 +3,10 @@ package com.dgioto.fairytalesinukrainian.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,24 +28,31 @@ fun HomeScreen(
     items: List<FairyTale>,
     viewModel: MainScreenViewModel
 ) {
-    LazyColumn(modifier = Modifier.padding()) {
-        items(items) { item ->
-            FairyTaleItem(navController, item, viewModel)
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(items) { item ->
+                FairyTaleItem(navController, item, viewModel)
+            }
         }
+        Spacer(modifier = Modifier.height(90.dp)) // Высота BottomNavigationBar
     }
 }
 
 @Composable
 fun FavouriteScreen(navController: NavHostController, viewModel: MainScreenViewModel) {
-    LazyColumn(modifier = Modifier.padding()) {
-        items(viewModel.favoriteFairyTales) { fairyTale ->
-            FairyTaleItem(
-                navController = navController,
-                fairyTale = fairyTale,
-                viewModel = viewModel
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.padding()) {
+            items(viewModel.favoriteFairyTales) { fairyTale ->
+                FairyTaleItem(
+                    navController = navController,
+                    fairyTale = fairyTale,
+                    viewModel = viewModel
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(90.dp)) // Высота BottomNavigationBar
     }
+
 }
 
 @Preview(showBackground = true)
@@ -78,7 +87,9 @@ fun TextWithRadioButtons(
     onOptionSelected: (Int) -> Unit // Функция, которая будет вызвана при выборе опции
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

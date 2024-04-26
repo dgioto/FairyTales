@@ -216,12 +216,12 @@ fun FairyTaleItem(
         }
     }
 }
+
 @Preview
 @Composable
 fun LightThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = false) { MainScreen() }
 }
-
 
 @Composable
 fun DarkThemePreview() {
