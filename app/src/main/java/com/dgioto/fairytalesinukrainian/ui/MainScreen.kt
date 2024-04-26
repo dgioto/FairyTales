@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -60,6 +61,15 @@ import com.dgioto.fairytalesinukrainian.ui.theme.FairyTalesInUkrainianTheme
 fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
     val navController = rememberNavController()
     val items = listOf(
+        FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
+        FairyTale(R.drawable.telesik, "Телесик", "Description 2", false),
+        FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
+        FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
+        FairyTale(R.drawable.telesik, "Телесик", "Description 2", false),
+        FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
+        FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
+        FairyTale(R.drawable.telesik, "Телесик", "Description 2", false),
+        FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
         FairyTale(R.drawable.koza_dereza, "Коза дереза", "Description 1", false),
         FairyTale(R.drawable.telesik, "Телесик", "Description 2", false),
         FairyTale(R.drawable.pan_kozkiy, "Пан коцький", "Description 3", false),
@@ -170,12 +180,12 @@ fun FairyTaleItem(
                 modifier = Modifier
                     .size(100.dp)
                     .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
-                    .clip(RoundedCornerShape(15.dp))
+                    .clip(RoundedCornerShape(10.dp))
             ) {
                 Image(
                     painter = painterResource(id = fairyTale.image),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
+                    contentScale = ContentScale.Crop
                 )
             }
             Text(
@@ -206,12 +216,12 @@ fun FairyTaleItem(
         }
     }
 }
-
 @Preview
 @Composable
 fun LightThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = false) { MainScreen() }
 }
+
 
 @Composable
 fun DarkThemePreview() {
