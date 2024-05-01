@@ -18,13 +18,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,14 +133,12 @@ fun BottomNavigationBar(navController: NavController) {
                     )
                 },
                 label = { Text(text = stringResource(id = item.titleResId)) },
-                colors = NavigationBarItemColors(
+                colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.secondary,
                     unselectedIconColor = MaterialTheme.colorScheme.surface,
                     selectedTextColor = MaterialTheme.colorScheme.secondary,
                     unselectedTextColor = MaterialTheme.colorScheme.surface,
-                    selectedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    disabledIconColor = Color.Green,
-                    disabledTextColor = Color.Green
+                    indicatorColor = MaterialTheme.colorScheme.primary
                 )
             )
         }
@@ -158,13 +156,14 @@ fun FairyTaleItem(
     Card(
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
-            .border(BorderStroke(2.dp, MaterialTheme.colorScheme.secondary), RoundedCornerShape(10.dp)),
-        colors = CardColors(
+            .border(
+                BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                RoundedCornerShape(10.dp)
+            ),
+        colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.secondary,
-            disabledContainerColor = Color.White,
-            disabledContentColor = Color.White,
-        )
+            )
     ) {
         // Обработчик нажатия добавлен к Row
         Row(
@@ -223,6 +222,7 @@ fun LightThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = false) { MainScreen() }
 }
 
+@Preview
 @Composable
 fun DarkThemePreview() {
     FairyTalesInUkrainianTheme(darkTheme = true) { MainScreen() }
