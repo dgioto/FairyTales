@@ -2,11 +2,10 @@ package com.dgioto.fairytalesinukrainian.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,33 +25,27 @@ import com.dgioto.fairytalesinukrainian.models.FairyTale
 fun HomeScreen(
     navController: NavHostController,
     items: List<FairyTale>,
-    viewModel: MainScreenViewModel
+    viewModel: MainScreenViewModel,
+    paddingValues: PaddingValues
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(items) { item ->
-                FairyTaleItem(navController, item, viewModel)
-            }
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        items(items) { item ->
+            FairyTaleItem(navController, item, viewModel)
         }
-        Spacer(modifier = Modifier.height(90.dp)) // Высота BottomNavigationBar
     }
 }
 
 @Composable
-fun FavouriteScreen(navController: NavHostController, viewModel: MainScreenViewModel) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.padding()) {
-            items(viewModel.favoriteFairyTales) { fairyTale ->
-                FairyTaleItem(
-                    navController = navController,
-                    fairyTale = fairyTale,
-                    viewModel = viewModel
-                )
-            }
+fun FavouriteScreen(
+    navController: NavHostController,
+    viewModel: MainScreenViewModel,
+    paddingValues: PaddingValues
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        items(viewModel.favoriteFairyTales) { fairyTale ->
+            FairyTaleItem(navController, fairyTale, viewModel)
         }
-        Spacer(modifier = Modifier.height(90.dp)) // Высота BottomNavigationBar
     }
-
 }
 
 @Preview(showBackground = true)
@@ -101,7 +94,7 @@ fun TextWithRadioButtons(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             options.forEachIndexed { index, (optionText, isSelected) ->
                 Text(
                     text = optionText,

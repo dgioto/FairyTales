@@ -1,6 +1,5 @@
 package com.dgioto.fairytalesinukrainian.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -8,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,7 +56,6 @@ import com.dgioto.fairytalesinukrainian.R
 import com.dgioto.fairytalesinukrainian.models.FairyTale
 import com.dgioto.fairytalesinukrainian.ui.theme.FairyTalesInUkrainianTheme
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
     val navController = rememberNavController()
@@ -76,18 +75,20 @@ fun MainScreen(viewModel: MainScreenViewModel = viewModel()) {
     )
 
     Scaffold( bottomBar = { BottomNavigationBar(navController) }
-    ) { NavigationGraph(navController, items, viewModel) }
+    ) { paddingValues ->
+        NavigationGraph(navController, items, viewModel, paddingValues) }
 }
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
     items: List<FairyTale>,
-    viewModel: MainScreenViewModel
+    viewModel: MainScreenViewModel,
+    paddingValues: PaddingValues
 ){
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
-        composable(NavigationItem.Home.route) { HomeScreen(navController, items, viewModel) }
-        composable(NavigationItem.Favourite.route) { FavouriteScreen(navController, viewModel) }
+        composable(NavigationItem.Home.route) { HomeScreen(navController, items, viewModel, paddingValues) }
+        composable(NavigationItem.Favourite.route) { FavouriteScreen(navController, viewModel, paddingValues) }
         composable(NavigationItem.Profile.route) { ProfileScreen() }
         composable(
             route = "detail/{title}",
